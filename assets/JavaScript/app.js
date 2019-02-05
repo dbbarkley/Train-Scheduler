@@ -11,36 +11,74 @@ var config = {
 // firebase database variable
 var database = firebase.database();
 
-var currentTime = $("#current-time").text(moment().format("h:mm:ss a"));
-  database.ref().set({
-      CurrentTime: currentTime
-  });
+function currentTime () {
+    $("#current-time").text(moment().format("h:mm:ss a"));
+};
+var myTimer = setInterval(currentTime, 1000);
 
 
 // on click function of submit button
 $("#submit").on("click", () => {
     clickEvent();
-})
+});
+/*
+var frequency = 10;
+
+var firstTrain = "6:00";
+
+var converted = moment(firstTrain, "HH:mm").subtract(1, "years");
+console.log(converted);
+    
+var currentTime = moment().format("hh:mm");
+console.log("CURRENT TIME: " + currentTime);
+
+var findDiff = moment().diff(moment(converted), "minutes");
+console.log("DIFFERENCE IN TIME: " + findDiff);
+
+var timeRemainder = findDiff % frequency;
+console.log(timeRemainder);
+
+var minutesLeft = frequency - timeRemainder;
+console.log("MINUTES TILL TRAIN: " + minutesLeft);
+
+var nextTrain = moment().add(minutesLeft, "minutes").format("hh:mm");
+console.log("ARRIVAL TIME: " + nextTrain);
+*/
+
 
 // function of pushing data into database when button is clicked
-function clickEvent () {
+function clickEvent (e) {
+
     var name = $("#name").val().trim();
     var destination = $("#destination").val().trim();
     var firstTrain = $("#first-train").val().trim();
     var frequency = $("#frequency").val().trim();
-    console.log(name);
+
+    //var changeTime = moment(firstTrain, "HH:mm").format("hh:mm a");
+
+    var converted = moment(firstTrain, "HH:mm").subtract(1, "years");
+
+    var findDiff = moment().diff(moment(converted), "minutes");
+
+    var timeRemainder = findDiff % frequency;
+
+    var minutesLeft = frequency - timeRemainder;
+
+    var nextTrain = moment().add(minutesLeft, "minutes").format("hh:mm");
 
 
     database.ref("trains").push({
         name: name,
         destination: destination,
-        firstTrain: firstTrain,
+        train: nextTrain,
         frequency: frequency,
+        arrival: minutesLeft
         
     }, (error) => {
         console.log(error);
-    })
-}
+    });
+return false;
+};
 
 // checking if database had any child updates & updating html
 database.ref("trains").on("child_added", function(childSnapshot) {
@@ -49,10 +87,10 @@ database.ref("trains").on("child_added", function(childSnapshot) {
     "<td>" + childSnapshot.val().name + "</td>" +
     "<td>" + childSnapshot.val().destination + "</td>" +
     "<td>" + childSnapshot.val().frequency + "</td>" +
-    //"<td>" + childSnapshot.val().monthsWorked + "</td>" +
-    "<td>" + childSnapshot.val().firstTrain + "</td>";
+    "<td>" + childSnapshot.val().train + "</td>" +
+    "<td>" + childSnapshot.val().arrival + "</td>";
 
     $("#form-body").append(tableText);
 }, (error) => {
     console.log(error);
-})
+});
