@@ -21,31 +21,6 @@ var myTimer = setInterval(currentTime, 1000);
 $("#submit").on("click", () => {
     clickEvent();
 });
-/*
-var frequency = 10;
-
-var firstTrain = "6:00";
-
-var converted = moment(firstTrain, "HH:mm").subtract(1, "years");
-console.log(converted);
-    
-var currentTime = moment().format("hh:mm");
-console.log("CURRENT TIME: " + currentTime);
-
-var findDiff = moment().diff(moment(converted), "minutes");
-console.log("DIFFERENCE IN TIME: " + findDiff);
-
-var timeRemainder = findDiff % frequency;
-console.log(timeRemainder);
-
-var minutesLeft = frequency - timeRemainder;
-console.log("MINUTES TILL TRAIN: " + minutesLeft);
-
-var nextTrain = moment().add(minutesLeft, "minutes").format("hh:mm");
-console.log("ARRIVAL TIME: " + nextTrain);
-*/
-
-
 // function of pushing data into database when button is clicked
 function clickEvent (e) {
 
@@ -54,7 +29,7 @@ function clickEvent (e) {
     var firstTrain = $("#first-train").val().trim();
     var frequency = $("#frequency").val().trim();
 
-    //var changeTime = moment(firstTrain, "HH:mm").format("hh:mm a");
+    var changeTime = moment(firstTrain, "HH:mm").format("hh:mm a");
 
     var converted = moment(firstTrain, "HH:mm").subtract(1, "years");
 
@@ -64,9 +39,9 @@ function clickEvent (e) {
 
     var minutesLeft = frequency - timeRemainder;
 
-    var nextTrain = moment().add(minutesLeft, "minutes").format("hh:mm");
-
-
+    var nextTrain = moment().add(minutesLeft, "minutes").format("hh:mm a");
+    
+    // Push to Firebase
     database.ref("trains").push({
         name: name,
         destination: destination,
