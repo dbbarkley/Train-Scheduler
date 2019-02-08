@@ -11,11 +11,11 @@ var config = {
 // firebase database variable
 var database = firebase.database();
 
+// Get current time and display it on page
 function currentTime () {
     $("#current-time").text(moment().format("h:mm:ss a"));
 };
 var myTimer = setInterval(currentTime, 1000);
-
 
 // on click function of submit button
 $("#submit").on("click", () => {
@@ -29,8 +29,7 @@ function clickEvent (e) {
     var firstTrain = $("#first-train").val().trim();
     var frequency = $("#frequency").val().trim();
 
-    var changeTime = moment(firstTrain, "HH:mm").format("hh:mm a");
-
+    // Calculations for next train arrival
     var converted = moment(firstTrain, "HH:mm").subtract(1, "years");
 
     var findDiff = moment().diff(moment(converted), "minutes");
@@ -40,7 +39,7 @@ function clickEvent (e) {
     var minutesLeft = frequency - timeRemainder;
 
     var nextTrain = moment().add(minutesLeft, "minutes").format("hh:mm a");
-    
+
     // Push to Firebase
     database.ref("trains").push({
         name: name,
@@ -49,13 +48,14 @@ function clickEvent (e) {
         frequency: frequency,
         arrival: minutesLeft
         
+        // Check for errors
     }, (error) => {
         console.log(error);
     });
 return false;
 };
 
-// checking if database had any child updates & updating html
+// checking if database had any child updates & appending html
 database.ref("trains").on("child_added", function(childSnapshot) {
     var tableText = 
     "<tr>" +
